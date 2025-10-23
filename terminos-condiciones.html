@@ -1,0 +1,228 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Términos y Condiciones de Uso de la Biblioteca en Línea de la Universidad Tecnológica de Puebla"/>
+  <title>Términos y Condiciones | Biblioteca UTP</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <style>
+    :root {
+      --primary: #1a5fb4;
+      --primary-dark: #0d47a1;
+      --bg: #f8f9fa;
+      --text: #212529;
+      --text-light: #495057;
+      --border: #dee2e6;
+      --success: #2b8a3e;
+      --radius: 8px;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+    a { color: var(--primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    header {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      text-align: center;
+      padding: 3rem 1rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2.2rem;
+      font-weight: 600;
+    }
+    header p {
+      margin: 0.5rem 0 0;
+      font-size: 1.1rem;
+      opacity: 0.95;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+
+    .policy-card {
+      background: white;
+      border-radius: var(--radius);
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      border: 1px solid var(--border);
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--primary-dark);
+      margin: 0 0 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    ul {
+      padding-left: 1.5rem;
+      margin: 0.75rem 0;
+    }
+    li {
+      margin-bottom: 0.5rem;
+    }
+
+    .contact-box {
+      background: #e3f2fd;
+      border-left: 5px solid var(--primary);
+      padding: 1rem 1.5rem;
+      border-radius: 0 var(--radius) var(--radius) 0;
+      margin: 1.5rem 0;
+      font-size: 1rem;
+    }
+
+    .contact-box i {
+      color: var(--primary);
+      margin-right: 0.5rem;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      background-color: #343a40;
+      color: #adb5bd;
+      font-size: 0.9rem;
+      margin-top: 3rem;
+    }
+
+    @media (max-width: 768px) {
+      header h1 { font-size: 1.8rem; }
+      .container { padding: 0 1rem; }
+      .policy-card { padding: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Encabezado -->
+  <header>
+    <h1>Términos y Condiciones de Uso</h1>
+    <p>Biblioteca en Línea – Universidad Tecnológica de Puebla</p>
+  </header>
+
+  <div class="container">
+
+    <!-- Objeto del servicio -->
+    <div class="policy-card">
+      <h2 class="section-title">
+        <i class="fas fa-book"></i> Objeto del servicio
+      </h2>
+      <p>La Biblioteca en Línea de la Universidad Tecnológica de Puebla permite a los usuarios registrados <strong>consultar el catálogo</strong> y <strong>solicitar préstamos de libros físicos</strong> disponibles en la biblioteca.</p>
+    </div>
+
+    <!-- Usuarios autorizados -->
+    <div class="policy-card">
+      <h2 class="section-title">
+        <i class="fas fa-user-check"></i> Usuarios autorizados
+      </h2>
+      <p>El servicio está disponible exclusivamente para <strong>estudiantes, profesores y personal autorizado</strong> de la Universidad Tecnológica de Puebla. Es necesario registrarse con <strong>credenciales oficiales</strong> para acceder y utilizar el sistema.</p>
+    </div>
+
+    <!-- Préstamo de libros -->
+    <div class="policy-card">
+      <h2 class="section-title">
+        <i class="fas fa-book-open"></i> Préstamo de libros
+      </h2>
+      <ul>
+        <li>Cada usuario podrá solicitar el préstamo de hasta <strong>2 libros simultáneamente</strong>.</li>
+        <li>El plazo máximo de préstamo es de <strong>5 días</strong>, con opción a renovación previa revisión del estado del libro y la disponibilidad.</li>
+        <li>Los libros deben ser devueltos en la fecha establecida; de lo contrario, se aplicarán <strong>sanciones</strong> según las políticas de la biblioteca.</li>
+      </ul>
+    </div>
+
+    <!-- Privacidad y datos personales -->
+    <div class="policy-card">
+      <h2 class="section-title">
+        <i class="fas fa-user-lock"></i> Privacidad y datos personales
+      </h2>
+      <p>Los datos proporcionados por el usuario serán utilizados exclusivamente para la <strong>gestión del préstamo</strong> y no serán compartidos con terceros sin consentimiento, conforme a la <a href="politica-privacidad.html">política de privacidad</a> de la Universidad Tecnológica de Puebla.</p>
+    </div>
+
+    <!-- Modificaciones y suspensión del servicio -->
+    <div class="policy-card">
+      <h2 class="section-title">
+        <i class="fas fa-tools"></i> Modificaciones y suspensión del servicio
+      </h2>
+      <p>La Universidad Tecnológica de Puebla se reserva el derecho de <strong>modificar, suspender o cancelar</strong> el servicio de préstamo en línea en cualquier momento sin previo aviso.</p>
+    </div>
+
+    <!-- Aceptación de los términos -->
+    <div class="policy-card">
+      <h2 class="section-title">
+        <i class="fas fa-check-circle"></i> Aceptación de los términos
+      </h2>
+      <p>Al registrarse y utilizar este sistema, el usuario acepta estos <strong>términos y condiciones</strong> en su totalidad.</p>
+    </div>
+
+  </div>
+
+  <!-- Pie de página -->
+  <footer>
+    <p>© <span id="year"></span> Universidad Tecnológica de Puebla – Biblioteca en Línea</p>
+    <p>Todos los derechos reservados.</p>
+  </footer>
+
+  <script>
+    // Actualiza el año automáticamente
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+
+</body>
+</html>
